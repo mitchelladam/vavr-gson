@@ -377,13 +377,17 @@ public class VavrGson {
     }
 
     public static Map<Type, Object> mapTypeAdapters() {
-        final Function<Iterable<Tuple2<Object, ?>>, Map<?, ?>> ofEntries2 = i->TreeMap.ofEntries((a,b)->((Comparable)a).compareTo(b), i);
         return API.<Type, Object>Map()
                 .put(Map.class, new MapConverter<>(HashMap::ofEntries))
-                .put(SortedMap.class, new MapConverter<>(ofEntries2))
+                .put(SortedMap.class, new MapConverter<>(VavrGson::getTreeMapMapper))
                 .put(HashMap.class, new MapConverter<>(HashMap::ofEntries))
                 .put(LinkedHashMap.class, new MapConverter<>(LinkedHashMap::ofEntries))
-                .put(TreeMap.class, new MapConverter<>(ofEntries2));
+                .put(TreeMap.class, new MapConverter<>(VavrGson::getTreeMapMapper));
+    }
+
+
+    private static <K,V> TreeMap<K, V> getTreeMapMapper(Iterable<Tuple2<K, V>> i) {
+        return TreeMap.ofEntries((a, b) -> ((Comparable) a).compareTo(b), i);
     }
 
     public static Map<Type, Object> collectionTypeAdapters() {
