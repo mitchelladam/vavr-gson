@@ -2,6 +2,7 @@ package io.vavr.gson.map;
 
 import com.google.gson.reflect.TypeToken;
 import io.vavr.collection.HashMap;
+import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.Map;
 
 import java.lang.reflect.Type;
@@ -25,5 +26,15 @@ public class MapTest extends MapLikeTest<Map<?,?>> {
     @Override
     Type typeWithNestedType() {
         return new TypeToken<Map<String, Map<String, Integer>>>(){}.getType();
+    }
+
+    @Override
+    Type intType() {
+        return new TypeToken<Map<Integer, Integer>>(){}.getType();
+    }
+
+    @Override
+    Type typeWithNestedIntType() {
+        return new TypeToken<Map<String, Map<Integer, Integer>>>(){}.getType();
     }
 }

@@ -1,6 +1,7 @@
 package io.vavr.gson.map;
 
 import com.google.gson.reflect.TypeToken;
+import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.SortedMap;
 import io.vavr.collection.TreeMap;
 
@@ -26,5 +27,15 @@ public class SortedMapTest extends MapLikeTest<SortedMap<?,?>> {
     @Override
     Type typeWithNestedType() {
         return new TypeToken<SortedMap<String, SortedMap<String, Integer>>>(){}.getType();
+    }
+
+    @Override
+    Type intType() {
+        return new TypeToken<SortedMap<Integer, Integer>>(){}.getType();
+    }
+
+    @Override
+    Type typeWithNestedIntType() {
+        return new TypeToken<SortedMap<String, SortedMap<Integer, Integer>>>(){}.getType();
     }
 }

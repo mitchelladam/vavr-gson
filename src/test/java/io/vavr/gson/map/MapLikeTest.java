@@ -13,7 +13,9 @@ public abstract class MapLikeTest<T extends Map<?,?>> extends AbstractTest {
     abstract T of(Object key, Object value);
     abstract Class<?> clz();
     abstract Type type();
+    abstract Type intType();
     abstract Type typeWithNestedType();
+    abstract Type typeWithNestedIntType();
 
     @Test(expected = JsonParseException.class)
     public void badJson() {
@@ -42,6 +44,13 @@ public abstract class MapLikeTest<T extends Map<?,?>> extends AbstractTest {
     }
 
     @Test
+    public void deserializeIntegerKey() {
+        Map<Integer, Integer> map = gson.fromJson("{\"1\":2}", intType());
+        assert clz().isAssignableFrom(map.getClass());
+        assert map.get(1).get() == 2;
+    }
+
+    @Test
     public void deserializeWithCast() {
         Map<String, Integer> map = gson.fromJson("{\"1\":\"2\"}", type());
         assert clz().isAssignableFrom(map.getClass());
@@ -53,5 +62,12 @@ public abstract class MapLikeTest<T extends Map<?,?>> extends AbstractTest {
         Map<String, Map<String, Integer>> map = gson.fromJson("{\"1\":{\"2\":3}}", typeWithNestedType());
         assert clz().isAssignableFrom(map.get("1").get().getClass());
         assert map.get("1").get().get("2").get() == 3;
+    }
+
+    @Test
+    public void deserializeNestedIntegerKey() {
+        Map<String, Map<Integer, Integer>> map = gson.fromJson("{\"1\":{\"2\":3}}", typeWithNestedIntType());
+        assert clz().isAssignableFrom(map.get("1").get().getClass());
+        assert map.get("1").get().get(2).get() == 3;
     }
 }

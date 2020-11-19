@@ -1,6 +1,7 @@
 package io.vavr.gson.map;
 
 import com.google.gson.reflect.TypeToken;
+import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.TreeMap;
 
 import java.lang.reflect.Type;
@@ -25,5 +26,15 @@ public class TreeMapTest extends MapLikeTest<TreeMap<?,?>> {
     @Override
     Type typeWithNestedType() {
         return new TypeToken<TreeMap<String, TreeMap<String, Integer>>>(){}.getType();
+    }
+
+    @Override
+    Type intType() {
+        return new TypeToken<TreeMap<Integer, Integer>>(){}.getType();
+    }
+
+    @Override
+    Type typeWithNestedIntType() {
+        return new TypeToken<TreeMap<String, TreeMap<Integer, Integer>>>(){}.getType();
     }
 }

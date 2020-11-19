@@ -9,6 +9,7 @@ package io.vavr.gson;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 
 import com.google.gson.GsonBuilder;
 import io.vavr.*;
@@ -376,12 +377,13 @@ public class VavrGson {
     }
 
     public static Map<Type, Object> mapTypeAdapters() {
+        final Function<Iterable<Tuple2<Object, ?>>, Map<?, ?>> ofEntries2 = i->TreeMap.ofEntries((a,b)->((Comparable)a).compareTo(b), i);
         return API.<Type, Object>Map()
                 .put(Map.class, new MapConverter<>(HashMap::ofEntries))
-                .put(SortedMap.class, new MapConverter<>(TreeMap::ofEntries))
+                .put(SortedMap.class, new MapConverter<>(ofEntries2))
                 .put(HashMap.class, new MapConverter<>(HashMap::ofEntries))
                 .put(LinkedHashMap.class, new MapConverter<>(LinkedHashMap::ofEntries))
-                .put(TreeMap.class, new MapConverter<>(TreeMap::ofEntries));
+                .put(TreeMap.class, new MapConverter<>(ofEntries2));
     }
 
     public static Map<Type, Object> collectionTypeAdapters() {

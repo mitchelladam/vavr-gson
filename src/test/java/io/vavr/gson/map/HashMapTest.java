@@ -22,7 +22,17 @@ public class HashMapTest extends MapLikeTest<HashMap<?,?>> {
     }
 
     @Override
+    Type intType() {
+        return new TypeToken<HashMap<Integer, Integer>>(){}.getType();
+    }
+
+    @Override
     Type typeWithNestedType() {
         return new TypeToken<HashMap<String, HashMap<String, Integer>>>(){}.getType();
+    }
+
+    @Override
+    Type typeWithNestedIntType() {
+        return new TypeToken<HashMap<String, HashMap<Integer, Integer>>>(){}.getType();
     }
 }

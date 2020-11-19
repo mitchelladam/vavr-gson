@@ -1,6 +1,7 @@
 package io.vavr.gson.map;
 
 import com.google.gson.reflect.TypeToken;
+import io.vavr.collection.HashMap;
 import io.vavr.collection.LinkedHashMap;
 
 import java.lang.reflect.Type;
@@ -24,5 +25,15 @@ public class LinkedHashMapTest extends MapLikeTest<LinkedHashMap<?,?>> {
     @Override
     Type typeWithNestedType() {
         return new TypeToken<LinkedHashMap<String, LinkedHashMap<String, Integer>>>(){}.getType();
+    }
+
+    @Override
+    Type intType() {
+        return new TypeToken<LinkedHashMap<Integer, Integer>>(){}.getType();
+    }
+
+    @Override
+    Type typeWithNestedIntType() {
+        return new TypeToken<LinkedHashMap<String, LinkedHashMap<Integer, Integer>>>(){}.getType();
     }
 }
