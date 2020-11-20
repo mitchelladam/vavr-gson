@@ -14,6 +14,11 @@ public class MapTest extends MapLikeTest<Map<?, ?>> {
     }
 
     @Override
+    <K, V> Map<K, V> ofTyped(K key, V value) {
+        return HashMap.of(key, value);
+    }
+
+    @Override
     Class<?> clz() {
         return Map.class;
     }

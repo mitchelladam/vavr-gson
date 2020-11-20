@@ -19,6 +19,8 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import io.vavr.collection.Map;
 
+import static jdk.nashorn.internal.runtime.JSType.isPrimitive;
+
 abstract class MapTypeConverter<T> implements JsonSerializer<T>, JsonDeserializer<T> {
 
     private static final Type[] EMPTY_TYPES = new Type[0];
@@ -55,9 +57,25 @@ abstract class MapTypeConverter<T> implements JsonSerializer<T>, JsonDeserialize
 
     @Override
     public JsonElement serialize(T src, Type type, JsonSerializationContext ctx) {
-        return toMap(src).foldLeft(new JsonObject(), (a, e) -> {
-            a.add(ctx.serialize(e._1).getAsString(), ctx.serialize(e._2));
-            return a;
-        });
+        final Map<?, ?> tuple2s = toMap(src);
+        if (tuple2s.isEmpty()) {
+            return new JsonObject();
+        } else {
+            // test the first element
+            final Object o = tuple2s.head()._1();
+            // primitives are fine
+            if (isPrimitive(o)) {
+                return tuple2s.foldLeft(new JsonObject(), (a, e) -> {
+                    a.add(ctx.serialize(e._1).getAsString(), ctx.serialize(e._2));
+                    return a;
+                });
+            } else {
+                //complex object key serialisation
+                return tuple2s.foldLeft(new JsonArray(), (a, e) -> {
+                    a.add(ctx.serialize(e));
+                    return a;
+                });
+            }
+        }
     }
 }

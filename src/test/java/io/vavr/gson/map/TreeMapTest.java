@@ -3,6 +3,7 @@ package io.vavr.gson.map;
 import java.lang.reflect.Type;
 
 import com.google.gson.reflect.TypeToken;
+import io.vavr.collection.Map;
 import io.vavr.collection.TreeMap;
 
 public class TreeMapTest extends MapLikeTest<TreeMap<?, ?>> {
@@ -11,6 +12,16 @@ public class TreeMapTest extends MapLikeTest<TreeMap<?, ?>> {
     @SuppressWarnings("unchecked")
     TreeMap<?, ?> of(Object key, Object value) {
         return TreeMap.of((Comparable) key, value);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    <K , V> Map<K, V> ofTyped(K key, V value) {
+        if (key instanceof Comparable) {
+            final Comparable typedKey = (Comparable<K>) key;
+            final Map<?, ?> of = TreeMap.of(typedKey, value);
+            return (Map<K, V>) of;
+        } else throw new IllegalArgumentException("Must be Comparable");
     }
 
     @Override

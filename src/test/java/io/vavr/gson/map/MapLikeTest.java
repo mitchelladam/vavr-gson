@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import io.vavr.collection.HashMap;
 import io.vavr.collection.Map;
 import io.vavr.gson.AbstractTest;
 import org.junit.Test;
@@ -13,6 +14,8 @@ import org.junit.Test;
 public abstract class MapLikeTest<T extends Map<?, ?>> extends AbstractTest {
 
     abstract T of(Object key, Object value);
+
+    abstract <K,V> Map<K,V> ofTyped(K key, V value);
 
     abstract Class<?> clz();
 
@@ -85,6 +88,17 @@ public abstract class MapLikeTest<T extends Map<?, ?>> extends AbstractTest {
         final CustomKey innerKey = new CustomKey(3, 4);
         final CustomKey outerKey = new CustomKey(1, 2);
         Map<CustomKey, Map<CustomKey, Integer>> map = gson.fromJson("[[{\"a\":1,\"b\":2},[[{\"a\":3,\"b\":4},5]]]]", getComplexNestedKeyType());
+        assert clz().isAssignableFrom(map.get(outerKey).get().getClass());
+        assert map.get(outerKey).get().get(innerKey).get() == 5;
+    }
+
+    @Test
+    public void serializeNestedComplexKey() {
+        final CustomKey innerKey = new CustomKey(3, 4);
+        final Map<CustomKey, Integer> innerMap = ofTyped(innerKey, 5);
+        final CustomKey outerKey = new CustomKey(1, 2);
+        final Map<CustomKey, Map<CustomKey, Integer>> vavrMap = ofTyped(outerKey, innerMap);
+        Map<CustomKey, Map<CustomKey, Integer>> map = gson.fromJson(gson.toJson(vavrMap), getComplexNestedKeyType());
         assert clz().isAssignableFrom(map.get(outerKey).get().getClass());
         assert map.get(outerKey).get().get(innerKey).get() == 5;
     }
