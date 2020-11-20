@@ -6,7 +6,18 @@
  */
 package io.vavr.gson;
 
-import com.google.gson.*;
+import java.lang.reflect.Type;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import io.vavr.Function1;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
@@ -15,13 +26,7 @@ import io.vavr.collection.List;
 import io.vavr.collection.Map;
 import io.vavr.collection.Multimap;
 
-import java.lang.reflect.Type;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-class MultimapConverter<K, V, T extends Multimap<K, V>> extends JsonObjectConverter<T> {
+class MultimapConverter<K, V, T extends Multimap<K, V>> extends MapTypeConverter<T> {
 
     private final Function<Iterable<Tuple2<String, ?>>, Multimap<?, ?>> factory;
 
@@ -39,6 +44,12 @@ class MultimapConverter<K, V, T extends Multimap<K, V>> extends JsonObjectConver
             mapper = e -> StreamSupport.stream(e.getValue().getAsJsonArray().spliterator(), false).map(v -> Tuple.of(e.getKey(), v));
         }
         return (T) factory.apply(obj.entrySet().stream().flatMap(mapper).collect(Collectors.toList()));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    T fromJsonArray(JsonArray arr, Type type, Type[] subTypes, JsonDeserializationContext ctx) throws JsonParseException {
+        throw new UnsupportedOperationException("Array types not supported for Multimaps");
     }
 
     @Override

@@ -12,6 +12,7 @@ public class AbstractTest {
     public static void before() {
         GsonBuilder builder = new GsonBuilder();
         VavrGson.registerAll(builder);
+        builder = builder.enableComplexMapKeySerialization();
         gson = builder.create();
     }
 

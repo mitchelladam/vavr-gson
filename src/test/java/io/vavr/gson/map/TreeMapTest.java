@@ -1,12 +1,12 @@
 package io.vavr.gson.map;
 
-import com.google.gson.reflect.TypeToken;
-import io.vavr.collection.LinkedHashMap;
-import io.vavr.collection.TreeMap;
-
 import java.lang.reflect.Type;
 
-public class TreeMapTest extends MapLikeTest<TreeMap<?,?>> {
+import com.google.gson.reflect.TypeToken;
+import io.vavr.collection.TreeMap;
+
+public class TreeMapTest extends MapLikeTest<TreeMap<?, ?>> {
+
     @Override
     @SuppressWarnings("unchecked")
     TreeMap<?, ?> of(Object key, Object value) {
@@ -20,21 +20,31 @@ public class TreeMapTest extends MapLikeTest<TreeMap<?,?>> {
 
     @Override
     Type type() {
-        return new TypeToken<TreeMap<String, Integer>>(){}.getType();
+        return new TypeToken<TreeMap<String, Integer>>() {
+        }.getType();
     }
 
     @Override
     Type typeWithNestedType() {
-        return new TypeToken<TreeMap<String, TreeMap<String, Integer>>>(){}.getType();
+        return new TypeToken<TreeMap<String, TreeMap<String, Integer>>>() {
+        }.getType();
     }
 
     @Override
     Type intType() {
-        return new TypeToken<TreeMap<Integer, Integer>>(){}.getType();
+        return new TypeToken<TreeMap<Integer, Integer>>() {
+        }.getType();
     }
 
     @Override
     Type typeWithNestedIntType() {
-        return new TypeToken<TreeMap<String, TreeMap<Integer, Integer>>>(){}.getType();
+        return new TypeToken<TreeMap<String, TreeMap<Integer, Integer>>>() {
+        }.getType();
+    }
+
+    @Override
+    Type getComplexNestedKeyType() {
+        return new TypeToken<TreeMap<CustomKey, TreeMap<CustomKey, Integer>>>() {
+        }.getType();
     }
 }

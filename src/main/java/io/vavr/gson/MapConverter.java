@@ -6,21 +6,26 @@
  */
 package io.vavr.gson;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.reflect.TypeToken;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.Map;
+import io.vavr.collection.Traversable;
+import io.vavr.collection.Vector;
 
-class MapConverter<K, V, T extends Map<K, V>> extends JsonObjectConverter<T> {
+class MapConverter<K, V, T extends Map<K, V>> extends MapTypeConverter<T> {
 
     private final Function<Iterable<Tuple2<K, V>>, Map<K, V>> factory;
 
@@ -42,21 +47,53 @@ class MapConverter<K, V, T extends Map<K, V>> extends JsonObjectConverter<T> {
         return (T) factory.apply(collect);
     }
 
-    private Tuple2<K, ?> convert(JsonDeserializationContext ctx, java.util.Map.Entry<String, JsonElement> e, Type keyType) {
-        final JsonPrimitive json = new JsonPrimitive(e.getKey());
-        final K deserialize = ctx.deserialize(json, keyType);
-        return Tuple.of(deserialize, e.getValue());
+    @Override
+    @SuppressWarnings("unchecked")
+    T fromJsonArray(JsonArray arr, Type type, Type[] subTypes, JsonDeserializationContext ctx) throws JsonParseException {
+        final Awkward tuple2KV = new Awkward(Tuple2.class, subTypes);
+        final Type traversableType = new TypeToken<Traversable<?>>() {
+        }.getType();
+        final Awkward traversableTuple2KV = new Awkward(traversableType, tuple2KV);
+        final TraversableConverter<Traversable<Tuple2<K, V>>> traversableConverter = new TraversableConverter<>(Vector::ofAll);
+        final Traversable<Tuple2<K, V>> tuple2s = traversableConverter.fromJsonArray(arr, traversableTuple2KV, traversableTuple2KV.getActualTypeArguments(), ctx);
+        return (T) factory.apply(tuple2s);
     }
 
     private Tuple2<K, V> convert(JsonDeserializationContext ctx, java.util.Map.Entry<String, JsonElement> e, Type keyType, Type valueType) {
         final JsonPrimitive json = new JsonPrimitive(e.getKey());
-        final K deserialize = ctx.deserialize(json, keyType);
-        final V deserialize1 = ctx.deserialize(e.getValue(), valueType);
-        return Tuple.of(deserialize, deserialize1);
+        final K key = ctx.deserialize(json, keyType);
+        final V value = ctx.deserialize(e.getValue(), valueType);
+        return Tuple.of(key, value);
     }
 
     @Override
     Map<K, V> toMap(T src) {
         return src;
+    }
+
+    private static final class Awkward implements ParameterizedType {
+
+        private final Type rawType;
+        private final Type[] subTypes;
+
+        private Awkward(Type rawType, Type... subTypes) {
+            this.rawType = rawType;
+            this.subTypes = subTypes;
+        }
+
+        @Override
+        public Type[] getActualTypeArguments() {
+            return subTypes;
+        }
+
+        @Override
+        public Type getRawType() {
+            return rawType;
+        }
+
+        @Override
+        public Type getOwnerType() {
+            return null;
+        }
     }
 }

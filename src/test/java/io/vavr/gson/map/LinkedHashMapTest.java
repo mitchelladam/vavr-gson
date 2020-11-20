@@ -36,4 +36,10 @@ public class LinkedHashMapTest extends MapLikeTest<LinkedHashMap<?,?>> {
     Type typeWithNestedIntType() {
         return new TypeToken<LinkedHashMap<String, LinkedHashMap<Integer, Integer>>>(){}.getType();
     }
+
+    @Override
+    Type getComplexNestedKeyType() {
+        return new TypeToken<LinkedHashMap<CustomKey, LinkedHashMap<CustomKey, Integer>>>() {
+        }.getType();
+    }
 }

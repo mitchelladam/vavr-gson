@@ -16,7 +16,7 @@ import io.vavr.collection.Traversable;
 
 import java.lang.reflect.Type;
 
-abstract class TupleConverter<T> extends JsonArrayConverter<T> {
+abstract class TupleConverter<T> extends ArrayTypeConverter<T> {
 
     static class N0 extends TupleConverter<Tuple0> {
 

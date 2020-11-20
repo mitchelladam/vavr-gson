@@ -1,13 +1,13 @@
 package io.vavr.gson.map;
 
-import com.google.gson.reflect.TypeToken;
-import io.vavr.collection.HashMap;
-import io.vavr.collection.LinkedHashMap;
-import io.vavr.collection.Map;
-
 import java.lang.reflect.Type;
 
-public class MapTest extends MapLikeTest<Map<?,?>> {
+import com.google.gson.reflect.TypeToken;
+import io.vavr.collection.HashMap;
+import io.vavr.collection.Map;
+
+public class MapTest extends MapLikeTest<Map<?, ?>> {
+
     @Override
     Map<?, ?> of(Object key, Object value) {
         return HashMap.of(key, value);
@@ -20,21 +20,31 @@ public class MapTest extends MapLikeTest<Map<?,?>> {
 
     @Override
     Type type() {
-        return new TypeToken<Map<String, Integer>>(){}.getType();
+        return new TypeToken<Map<String, Integer>>() {
+        }.getType();
     }
 
     @Override
     Type typeWithNestedType() {
-        return new TypeToken<Map<String, Map<String, Integer>>>(){}.getType();
+        return new TypeToken<Map<String, Map<String, Integer>>>() {
+        }.getType();
     }
 
     @Override
     Type intType() {
-        return new TypeToken<Map<Integer, Integer>>(){}.getType();
+        return new TypeToken<Map<Integer, Integer>>() {
+        }.getType();
     }
 
     @Override
     Type typeWithNestedIntType() {
-        return new TypeToken<Map<String, Map<Integer, Integer>>>(){}.getType();
+        return new TypeToken<Map<String, Map<Integer, Integer>>>() {
+        }.getType();
+    }
+
+    @Override
+    Type getComplexNestedKeyType() {
+        return new TypeToken<Map<CustomKey, Map<CustomKey, Integer>>>() {
+        }.getType();
     }
 }
